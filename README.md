@@ -1,4 +1,4 @@
-# local-transcriber
+# Local Transcriber
 
 GPU-accelerated local audio transcription using [faster-whisper](https://github.com/SYSTRAN/faster-whisper) with Silero VAD, automatic two-pass hotword inference, and an optional LLM correction pass via [Ollama](https://ollama.com).
 
@@ -44,7 +44,7 @@ graph LR
 
 ```bash
 # Clone and install
-git clone https://github.com/YOUR_USERNAME/local-transcriber
+git clone https://github.com/kimo26/local-transcriber
 cd local-transcriber
 uv sync
 
