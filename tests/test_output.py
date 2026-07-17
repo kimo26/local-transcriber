@@ -3,13 +3,19 @@
 
 from __future__ import annotations
 
-from transcriber.models import SegmentRecord
+import json
+import tempfile
+from pathlib import Path
+
+from transcriber.models import OllamaConfig, SegmentRecord, TranscribeConfig
 from transcriber.output import (
     paragraph_text,
     review_report,
     srt_text,
+    subtitle_text,
     timestamped_text,
     vtt_text,
+    write_outputs,
 )
 from transcriber.utils import format_clock
 
@@ -117,6 +123,20 @@ class TestVttText:
         assert "." in result.split("\n")[2]
 
 
+class TestSubtitleText:
+    def test_wraps_long_line(self) -> None:
+        long = "word " * 20
+        result = subtitle_text(long, width=40)
+        assert all(len(line) <= 40 for line in result.splitlines())
+
+    def test_short_text_unchanged(self) -> None:
+        assert subtitle_text("hello", width=80) == "hello"
+
+    def test_normalises_whitespace(self) -> None:
+        result = subtitle_text("  hello   world  ", width=80)
+        assert result == "hello world"
+
+
 class TestReviewReport:
     def test_no_flagged(self) -> None:
         result = review_report([_seg()])
@@ -127,3 +147,76 @@ class TestReviewReport:
         result = review_report([seg])
         assert "low quality score" in result
         assert "Raw:" in result
+
+
+class TestWriteOutputs:
+    def _default_cfg(self) -> TranscribeConfig:
+        return TranscribeConfig(model="large-v3")
+
+    def _default_ollama(self, model: str = "qwen3:7b") -> OllamaConfig:
+        return OllamaConfig(model=model, enabled=True)
+
+    def test_creates_expected_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out"
+            write_outputs(
+                output_dir=out,
+                source=Path("/tmp/audio.mp3"),
+                segments=[_seg()],
+                metadata={"detected_language": "en", "language_probability": 0.99},
+                cfg=self._default_cfg(),
+                ollama_cfg=self._default_ollama(),
+                context="",
+                glossary=[],
+                asr_device="cpu",
+                asr_compute_type="int8",
+            )
+            expected = [
+                "transcript.txt",
+                "transcript_raw.txt",
+                "transcript_timestamped.txt",
+                "transcript.srt",
+                "transcript.vtt",
+                "review_needed.txt",
+                "transcript.json",
+            ]
+            for name in expected:
+                assert (out / name).exists(), f"{name} missing"
+
+    def test_json_ollama_model_uses_ollama_config(self) -> None:
+        """The JSON document must record the Ollama model, not the ASR model."""
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out"
+            write_outputs(
+                output_dir=out,
+                source=Path("/tmp/audio.mp3"),
+                segments=[_seg()],
+                metadata={},
+                cfg=self._default_cfg(),
+                ollama_cfg=self._default_ollama(model="qwen3:7b"),
+                context="",
+                glossary=[],
+                asr_device="cpu",
+                asr_compute_type="int8",
+            )
+            doc = json.loads((out / "transcript.json").read_text())
+            assert doc["pipeline"]["ollama_model"] == "qwen3:7b"
+            assert doc["pipeline"]["ollama_model"] != "large-v3"
+
+    def test_json_ollama_model_null_when_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out"
+            write_outputs(
+                output_dir=out,
+                source=Path("/tmp/audio.mp3"),
+                segments=[_seg()],
+                metadata={},
+                cfg=self._default_cfg(),
+                ollama_cfg=OllamaConfig(model="qwen3:7b", enabled=False),
+                context="",
+                glossary=[],
+                asr_device="cpu",
+                asr_compute_type="int8",
+            )
+            doc = json.loads((out / "transcript.json").read_text())
+            assert doc["pipeline"]["ollama_model"] is None
