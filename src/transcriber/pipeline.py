@@ -19,7 +19,6 @@ from transcriber.models import GpuInfo, OllamaConfig, SegmentRecord, TranscribeC
 from transcriber.ollama import correct_with_ollama
 from transcriber.utils import eprint, run_ffmpeg
 
-# Progress-event type: callers supply a callback that receives string events.
 ProgressCallback = Callable[[str], None]
 
 

@@ -11,8 +11,9 @@ from __future__ import annotations
 
 import gc
 from collections.abc import Sequence
+from pathlib import Path
 from statistics import mean
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from transcriber.models import (
     _CUDA_FALLBACK_MARKERS,
@@ -23,20 +24,15 @@ from transcriber.models import (
 )
 from transcriber.utils import eprint, normalise_whitespace
 
-if TYPE_CHECKING:
-    pass
-
 try:
     import ctranslate2
     from faster_whisper import WhisperModel
 except ImportError:
-    WhisperModel = None  # noqa: F841
-    ctranslate2 = None  # noqa: F841
+    WhisperModel = None
+    ctranslate2 = None
 
 
-# ---------------------------------------------------------------------------
 # Quality scoring
-# ---------------------------------------------------------------------------
 
 
 def quality_score(
@@ -76,9 +72,7 @@ def review_reasons_for(
     return reasons
 
 
-# ---------------------------------------------------------------------------
 # Device and compute-type resolution
-# ---------------------------------------------------------------------------
 
 
 def resolve_device_and_compute(
@@ -106,9 +100,7 @@ def _is_cuda_fallback_error(exc: Exception) -> bool:
     return any(marker in msg for marker in _CUDA_FALLBACK_MARKERS)
 
 
-# ---------------------------------------------------------------------------
 # Model loading with transparent CPU fallback
-# ---------------------------------------------------------------------------
 
 
 def probe_and_load_model(
@@ -189,13 +181,11 @@ def probe_and_load_model(
         raise
 
 
-# ---------------------------------------------------------------------------
 # Transcription loop
-# ---------------------------------------------------------------------------
 
 
 def transcribe_audio(
-    audio_path: Any,  # Path, but avoid circular at type-check time
+    audio_path: Path,
     cfg: TranscribeConfig,
     context: str,
     glossary: list[str],

@@ -35,9 +35,7 @@ from transcriber.bootstrap import detect_gpu_info
 from transcriber.models import OllamaConfig, SegmentRecord, TranscribeConfig
 from transcriber.pipeline import run_pipeline
 
-# ---------------------------------------------------------------------------
 # Job state machine
-# ---------------------------------------------------------------------------
 
 
 class JobStatus(StrEnum):
@@ -70,9 +68,7 @@ app.add_middleware(
 )
 
 
-# ---------------------------------------------------------------------------
 # Background transcription task
-# ---------------------------------------------------------------------------
 
 
 async def _run_job(
@@ -129,9 +125,7 @@ async def _run_job(
         job.progress_queue.put_nowait(None)  # sentinel: SSE stream should close
 
 
-# ---------------------------------------------------------------------------
 # Endpoints
-# ---------------------------------------------------------------------------
 
 
 @app.post("/api/jobs", status_code=202)
@@ -236,9 +230,7 @@ async def health() -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
 # Server entry point
-# ---------------------------------------------------------------------------
 
 
 def serve() -> None:

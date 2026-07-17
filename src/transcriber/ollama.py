@@ -12,21 +12,19 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from transcriber.guardrails import validate_correction
 from transcriber.models import CORRECTION_SCHEMA, OllamaConfig, SegmentRecord
 from transcriber.utils import eprint, normalise_whitespace, strip_think_tags
 
-# ---------------------------------------------------------------------------
 # HTTP primitives
-# ---------------------------------------------------------------------------
 
 
 def get_json(url: str, timeout: int = 15) -> dict[str, Any]:
     request = urllib.request.Request(url, method="GET")
     with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))  # type: ignore[no-any-return]
+        return cast(dict[str, Any], json.loads(response.read().decode("utf-8")))
 
 
 def post_json(url: str, payload: dict[str, Any], timeout: int) -> dict[str, Any]:
@@ -38,12 +36,10 @@ def post_json(url: str, payload: dict[str, Any], timeout: int) -> dict[str, Any]
         method="POST",
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))  # type: ignore[no-any-return]
+        return cast(dict[str, Any], json.loads(response.read().decode("utf-8")))
 
 
-# ---------------------------------------------------------------------------
 # Ollama availability check
-# ---------------------------------------------------------------------------
 
 
 def verify_ollama(ollama_url: str, model: str) -> None:
@@ -64,9 +60,7 @@ def verify_ollama(ollama_url: str, model: str) -> None:
         )
 
 
-# ---------------------------------------------------------------------------
 # Batch construction
-# ---------------------------------------------------------------------------
 
 
 def make_batches(
@@ -142,9 +136,7 @@ Segments to correct:
 """.strip()
 
 
-# ---------------------------------------------------------------------------
 # LLM correction pass
-# ---------------------------------------------------------------------------
 
 
 def correct_with_ollama(

@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-test:
+  python:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,16 +24,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Lint (ruff check)
+      - name: Lint
         run: uv run ruff check src/ tests/
 
-      - name: Format check (ruff format)
+      - name: Format check
         run: uv run ruff format --check src/ tests/
 
-      - name: Type check (mypy)
+      - name: Type check
         run: uv run mypy src/
 
-      - name: Test (pytest)
+      - name: Test
         run: uv run pytest --cov=src/transcriber --cov-report=term-missing
 
   frontend:
@@ -48,8 +48,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend deps
+      - name: Install
         run: cd frontend && npm ci
 
-      - name: Build frontend
+      - name: Build
         run: cd frontend && npm run build

@@ -8,9 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-# ---------------------------------------------------------------------------
 # Hardware descriptor
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -19,9 +17,7 @@ class GpuInfo:
     cuda_major: int  # inferred CUDA major version from driver
 
 
-# ---------------------------------------------------------------------------
 # Transcript data model
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -51,9 +47,7 @@ class SegmentRecord:
     correction_applied: bool = False
 
 
-# ---------------------------------------------------------------------------
 # Pipeline configuration
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -105,9 +99,7 @@ class OllamaConfig:
     enabled: bool = True
 
 
-# ---------------------------------------------------------------------------
 # Regex constants (used across multiple modules)
-# ---------------------------------------------------------------------------
 
 NEGATION_PATTERN = re.compile(
     r"\b(?:no|not|never|none|nothing|neither|nor|without|cannot|can't|"
@@ -124,9 +116,7 @@ _ACRONYM_PATTERN = re.compile(r"\b[A-Z]{2,}\b")
 _CAMELCASE_PATTERN = re.compile(r"\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b")
 _TECH_TOKEN_PATTERN = re.compile(r"\b[A-Za-z][\w]*[-_][\w]+\b")
 
-# ---------------------------------------------------------------------------
 # Structured JSON schemas for Ollama constrained outputs
-# ---------------------------------------------------------------------------
 
 CORRECTION_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -166,9 +156,7 @@ INFERENCE_SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
 }
 
-# ---------------------------------------------------------------------------
 # Other shared constants
-# ---------------------------------------------------------------------------
 
 AUDIO_EXTENSIONS = {
     ".aac",
