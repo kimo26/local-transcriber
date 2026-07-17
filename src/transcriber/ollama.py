@@ -18,8 +18,6 @@ from transcriber.guardrails import validate_correction
 from transcriber.models import CORRECTION_SCHEMA, OllamaConfig, SegmentRecord
 from transcriber.utils import eprint, normalise_whitespace, strip_think_tags
 
-# HTTP primitives
-
 
 def get_json(url: str, timeout: int = 15) -> dict[str, Any]:
     request = urllib.request.Request(url, method="GET")
@@ -39,9 +37,6 @@ def post_json(url: str, payload: dict[str, Any], timeout: int) -> dict[str, Any]
         return cast(dict[str, Any], json.loads(response.read().decode("utf-8")))
 
 
-# Ollama availability check
-
-
 def verify_ollama(ollama_url: str, model: str) -> None:
     try:
         data = get_json(f"{ollama_url.rstrip('/')}/api/tags")
@@ -58,9 +53,6 @@ def verify_ollama(ollama_url: str, model: str) -> None:
             f"Ollama model {model!r} is not installed. Run `ollama pull {model}`. "
             f"Installed models: {available}"
         )
-
-
-# Batch construction
 
 
 def make_batches(
@@ -134,9 +126,6 @@ Immediately following context:
 Segments to correct:
 {json.dumps(payload, ensure_ascii=False, indent=2)}
 """.strip()
-
-
-# LLM correction pass
 
 
 def correct_with_ollama(

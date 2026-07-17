@@ -32,9 +32,6 @@ except ImportError:
     ctranslate2 = None
 
 
-# Quality scoring
-
-
 def quality_score(
     avg_logprob: float,
     no_speech_prob: float,
@@ -72,9 +69,6 @@ def review_reasons_for(
     return reasons
 
 
-# Device and compute-type resolution
-
-
 def resolve_device_and_compute(
     device_arg: str,
     compute_type_arg: str,
@@ -98,9 +92,6 @@ def resolve_device_and_compute(
 def _is_cuda_fallback_error(exc: Exception) -> bool:
     msg = str(exc)
     return any(marker in msg for marker in _CUDA_FALLBACK_MARKERS)
-
-
-# Model loading with transparent CPU fallback
 
 
 def probe_and_load_model(
@@ -179,9 +170,6 @@ def probe_and_load_model(
             )
             return model, "cpu", "int8"
         raise
-
-
-# Transcription loop
 
 
 def transcribe_audio(

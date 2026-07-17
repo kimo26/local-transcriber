@@ -145,7 +145,7 @@ def write_outputs(
             "two_pass": not cfg.single_pass,
             "vad": "Silero VAD through faster-whisper",
             "ollama_enabled": ollama_cfg.enabled,
-            "ollama_model": cfg.model if ollama_cfg.enabled else None,
+            "ollama_model": ollama_cfg.model if ollama_cfg.enabled else None,
             "correction_guardrails": {
                 "preserve_numbers": True,
                 "preserve_negations": True,
